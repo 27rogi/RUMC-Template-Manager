@@ -1,62 +1,76 @@
+/*
+@  Система шаблонов 1.1 (версия от 21 февраля 2017 года) от sdir01
+@  Код содержит много говнокода и прочей фигни, если вы хотите помочь я буду не против.
+@  Копирование кода запрещено, шутка, кому он вообще нафиг нужен :D
+  */
+
 window.onload = function() {
 
     /*
-    Система шаблонов 1.0 от sdir01
-    Код может содержать ошибки и иметь погрешности.
-    Копирование кода запрещено, шутка, кому он вообще нафиг нужен :D
+  @  Настройки скрипта
     */
-
-    //###################//
-    // Настройки скрипта //
-    //###################//
     var FullPostContainer = $('#full_post'); // Контейнер с полной новостью
     var ButtonID = 'button'; // Айди кнопки которая будет устанавливать шаблон
     var SelectionID = '#category'; // Айди выпадающего списка
-    var InstallTemplate = "Установить шаблон"; // Если шаблон найден
-    var NoTemplate = "Шаблон не найден"; // Если шаблон отсутствует
+    var InstallTemplate = 'Установить шаблон'; // Если шаблон найден
+    var NoTemplate = 'Шаблон не найден'; // Если шаблон отсутствует
+    /* Получаем кнопку используя её id */
+    var getButton = $('#' + ButtonID);
 
-    //########//
-    // Функции //
-    //########//
+    /*
+    Отключаем кнопку и устанавливаем значение из NoTemplate
+    */
+    getButton.text(NoTemplate);
+    getButton.attr("disabled", true);
+
+    /*
+    Система тегов которая будет заменять все специальные теги в шаблоне
+    */
+    function replaceTags(stringToReplace) {
+        return stringToReplace
+            /* Заменяем тег {name} на текст из поля 'xf_name' */
+            .replace("{name}", $('#xf_name').val());
+
+    }
+
     function GetCategoryValueID() {
-        // Возвращаем id категории
+        /* Возвращаем id категории */
         return $(SelectionID).val();
     }
 
     function getTemplate(templateID) {
-      switch (templateID) {
-        // Получаем шаблон для выбранной категории
-        case "1": // Первая категория (Моды)
-          return "Здесь мог быть ваш текст\n\n\nКруто да? Я тоже так думаю."; // Шаблон который будет применен
-        break;
-        default:
-          return null;
-      }
-    }
-
-    function ApplyTemplate() {
-        if(getTemplate(GetCategoryValueID()) != null) {
-          FullPostContainer.val(getTemplate(GetCategoryValueID()));
+        switch (templateID) {
+            // Получаем шаблон для выбранной категории
+            case "1": // Первая категория (Моды)
+                return "Привет, сегодня вы будете смотреть на шаблон категории моды!\nСегодня мы рассмотрим мод {name} который поможет нам в игре!"; // Шаблон который будет применен
+            case "3": // Первая категория (Что-то)
+                return "А тут должно быть что-то но его нету!\nЭто что-то называют {name}, прикольно, да?!"; // Шаблон который будет применен
+            default:
+                return null;
         }
     }
 
-    //####################//
-    // Рабочая часть скрипта //
-    //###################//
-    // Основной код скрипта
-    document.getElementById(ButtonID).disabled = true;
+    function ApplyTemplate() {
+        if (getTemplate(GetCategoryValueID()) !== null) {
+            FullPostContainer.val(replaceTags(getTemplate(GetCategoryValueID())));
+        }
+    }
 
     // Чекаем наличие шаблона для этой категории
-    $(document).on('change',SelectionID,function(){
-      if (getTemplate(GetCategoryValueID()) == null) {
-        document.getElementById(ButtonID).disabled = true;
-        $('#'+ButtonID).text(NoTemplate);
-      } else {
-        document.getElementById(ButtonID).disabled = false;
-        $('#'+ButtonID).text(InstallTemplate);
-      }
+    $(document).on('change', SelectionID, function() {
+        if (getTemplate(GetCategoryValueID()) === null) {
+            getButton.attr("disabled", true);
+            getButton.text(NoTemplate);
+        } else {
+            getButton.removeAttr("disabled");
+            getButton.text(InstallTemplate);
+        }
     });
 
-  // Проверяем если кликнули на кнопку, если да то ставим шаблон
-  document.getElementById(ButtonID).onclick = function() { ApplyTemplate() };
+    /*
+    Если пользователь нажмет на кнопку то выполняем метод ApplyTemplate()
+    */
+    getButton.click(function() {
+        ApplyTemplate();
+    });
 };
